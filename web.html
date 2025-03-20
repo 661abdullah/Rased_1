@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rased</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow: hidden;
+        }
+        .sensor-readings {
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+        }
+        .camera-feed {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+        }
+        .alerts {
+            grid-column: 1 / 3;
+            grid-row: 2 / 3;
+        }
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        .camera-container {
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #eee;
+            border-radius: 4px;
+        }
+        .alert-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .alert-item.critical {
+            background-color: rgba(255, 0, 0, 0.1);
+            border-left: 4px solid #ff0000;
+        }
+        .alert-item.warning {
+            background-color: rgba(255, 165, 0, 0.1);
+            border-left: 4px solid #ffa500;
+        }
+        .alert-item.info {
+            background-color: rgba(0, 123, 255, 0.1);
+            border-left: 4px solid #007bff;
+        }
+        .alert-icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        .sensor-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .sensor-table th, .sensor-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .sensor-table th {
+            background-color: #f5f5f5;
+        }
+        .anomaly {
+            background-color: rgba(255, 0, 0, 0.1);
+            color: #d63031;
+            font-weight: bold;
+        }
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-left: 15px;
+        }
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .status-dot.online {
+            background-color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Rased</h1>
+        <div class="status-indicator">
+            <div class="status-dot online"></div>
+            <span>Online</span>
+        </div>
+    </div>
+    
+    <div class="dashboard">
+        <!-- Sensor Readings Section -->
+        <div class="card sensor-readings">
+            <h2>Sensor Readings</h2>
+            <div class="chart-container">
+                <canvas id="sensorChart"></canvas>
+            </div>
+            <table class="sensor-table">
+                <thead>
+                    <tr>
+                        <th>Sensor</th>
+                        <th>Value</th>
+                        <th>Range</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Temperature</td>
+                        <td>24.5°C</td>
+                        <td>20-25°C</td>
+                        <td>Normal</td>
+                    </tr>
+                    <tr class="anomaly">
+                        <td>Pressure</td>
+                        <td>32.7 psi</td>
+                        <td>10-30 psi</td>
+                        <td>Anomaly</td>
+                    </tr>
+                    <tr>
+                        <td>Humidity</td>
+                        <td>45%</td>
+                        <td>30-60%</td>
+                        <td>Normal</td>
+                    </tr>
+                    <tr class="anomaly">
+                        <td>Vibration</td>
+                        <td>85 Hz</td>
+                        <td>10-50 Hz</td>
+                        <td>Anomaly</td>
+                    </tr>
+                    <tr>
+                        <td>Flow Rate</td>
+                        <td>12.3 L/min</td>
+                        <td>10-15 L/min</td>
+                        <td>Normal</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Camera Feed Section -->
+        <div class="card camera-feed">
+            <h2>Camera Feed</h2>
+            <div class="camera-container">
+                <img src="/Users/abdullahalharbi/Desktop/Drone/PHOTO-2025-03-01-12-10-33.jpg" alt="Camera Feed" />
+            </div>
+            <div style="margin-top: 10px; display: flex; justify-content: space-between;">
+                <button style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous Frame</button>
+                <span>Camera 1 - Machine Room</span>
+                <button style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Next Frame</button>
+            </div>
+        </div>
+        
+        <!-- Alerts Section -->
+        <div class="card alerts">
+            <h2>System Alerts</h2>
+            <div class="alert-item critical">
+                <div class="alert-icon">⚠️</div>
+                <div>
+                    <h4 style="margin: 0;">Critical Alert: Emergency</h4>
+                    <p style="margin: 5px 0 0;">Camera 1: fallen detected.</p>
+                    <small>17 Mar 2025, 09:55:34</small>
+                </div>
+            </div>
+            <div class="alert-item critical">
+                <div class="alert-icon">⚠️</div>
+                <div>
+                    <h4 style="margin: 0;">Critical Alert: Pressure Sensor</h4>
+                    <p style="margin: 5px 0 0;">Pressure exceeded maximum threshold (32.7 psi). Check system immediately.</p>
+                    <small>17 Mar 2025, 09:45:22</small>
+                </div>
+            </div>
+            <div class="alert-item warning">
+                <div class="alert-icon">⚠️</div>
+                <div>
+                    <h4 style="margin: 0;">Warning: Vibration Sensor</h4>
+                    <p style="margin: 5px 0 0;">Abnormal vibration pattern detected (85 Hz). Maintenance check recommended.</p>
+                    <small>17 Mar 2025, 09:42:15</small>
+                </div>
+            </div>
+            <div class="alert-item info">
+                <div class="alert-icon">ℹ️</div>
+                <div>
+                    <h4 style="margin: 0;">Information: Camera System</h4>
+                    <p style="margin: 5px 0 0;">Camera 2 reconnected after temporary connection loss.</p>
+                    <small>17 Mar 2025, 09:30:44</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Sample data for the sensor chart
+        const ctx = document.getElementById('sensorChart').getContext('2d');
+        const sensorChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['09:00', '09:10', '09:20', '09:30', '09:40', '09:50'],
+                datasets: [
+                    {
+                        label: 'Temperature (°C)',
+                        data: [23.1, 23.4, 23.7, 24.0, 24.2, 24.5],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: 'Pressure (psi)',
+                        data: [18.2, 19.5, 22.3, 25.8, 29.6, 32.7],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: 'Humidity (%)',
+                        data: [48, 47, 46, 45, 45, 45],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: 'Vibration (Hz)',
+                        data: [12, 15, 22, 35, 62, 85],
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        tension: 0.1,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+
+        // Simulate updating data
+        setInterval(() => {
+            const now = new Date();
+            const timeString = now.getHours() + ':' + now.getMinutes();
+            
+            // For demonstration purposes only
+            if (Math.random() > 0.7) {
+                const newAlert = document.createElement('div');
+                newAlert.className = 'alert-item info';
+                newAlert.innerHTML = `
+                    <div class="alert-icon">ℹ️</div>
+                    <div>
+                        <h4 style="margin: 0;">Information: System Update</h4>
+                        <p style="margin: 5px 0 0;">Regular system check completed.</p>
+                        <small>${now.toLocaleString()}</small>
+                    </div>
+                `;
+                
+                const alertsContainer = document.querySelector('.alerts');
+                alertsContainer.insertBefore(newAlert, alertsContainer.children[1]);
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
